@@ -43,7 +43,7 @@ export default class WeatherIndex extends Component {
 
   render() {
     return (
-      <Image style={styles.container} source={backgroundImage}>
+      <Image style={styles.container} source={backgroundImage} resizeMode={'cover'}>
         <StatusBar hidden={true} />
 
         <View style={styles.body}>
@@ -62,7 +62,9 @@ export default class WeatherIndex extends Component {
 
 const styles = StyleSheet.create({
   container:{
-    flex:1
+    flex:1,
+    width:null,
+    height:null
   },
   body:{
     flex:3
