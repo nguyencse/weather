@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
   StyleSheet,
   Text,
@@ -6,7 +6,8 @@ import {
   StatusBar,
   Image,
   ListView
-} from 'react-native';
+} from 'react-native'
+import styles from './styles'
 
 const apiKey = '57bb3d115200197085a58518294d49c2'
 const url = 'http://api.openweathermap.org/data/2.5/weather?'
@@ -51,12 +52,6 @@ export default class WeatherIndex extends Component {
     super(props)
     arrayForecast = []
 
-    optionGeo={
-      enableHighAccuracy:true,
-      timeout:10000,
-      maximumAge:2000
-    }
-
     this.state={
       location:null,
       coords:null,
@@ -65,11 +60,13 @@ export default class WeatherIndex extends Component {
   }
 
   componentWillMount(){
-    navigator.geolocation.getCurrentPosition(this._getLocation.bind(this), (error)=>alert(error.message), optionGeo)
+    navigator.geolocation.getCurrentPosition(this._getLocation.bind(this), (error)=>alert(error.message))
   }
 
   _getLocation(dataLocation){
     this.setState({location:dataLocation.coords})
+
+    console.log(this.state.location)
 
     if(this.state.location !== null){
       let urlLocation = url + 'lat='+this.state.location.latitude+'&lon='+this.state.location.latitude+'&appid='+apiKey+'&units=metric'
@@ -214,11 +211,11 @@ export default class WeatherIndex extends Component {
           <Text style={{color:'white'}} key={data.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
         </View>
 
-        {this.state.coords && data.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+        {data.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
 
         <View style={{flex:1, flexDirection:'row',alignItems:'center'}}>
-          <Text style={{color:'white'}}>25</Text>
-          <Text style={{color:'white'}}>o</Text>
+          <Text style={{color:'white'}}>{data.temp.day}</Text>
+          <Text style={{color:'white',fontSize:8,alignSelf:'flex-start'}}>o</Text>
           <Text style={{color:'white'}}>C</Text>
         </View>
       </View>
@@ -239,7 +236,7 @@ export default class WeatherIndex extends Component {
               renderSeparator={(sectionID,rowID)=><View style={{flex:1,height:1,backgroundColor:'rgba(0,0,0,0.2)'}}></View>}
               style={{paddingTop:10}}
             />
-            <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20}}>Weather Forecast</Text>
+            <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20}}>WEATHER FORECAST</Text>
           </View>
         </View>
 
@@ -267,71 +264,3 @@ export default class WeatherIndex extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    width:null,
-    height:null
-  },
-  body:{
-    flex:3
-  },
-  footer:{
-    flex:1,
-    flexDirection:'row'
-  },
-  containerBody:{
-    flex:1,
-    marginLeft:30,
-    marginRight:30,
-    marginTop:30,
-    marginBottom:10,
-    borderRadius:10,
-    backgroundColor:'rgba(0,0,0,0.5)',
-  },
-  footerLeft:{
-    flex:2,
-    marginLeft:30,
-    justifyContent:'center'
-  },
-  footerRight:{
-    flex:3,
-    marginRight:30,
-    alignItems:'flex-end',
-    justifyContent:'center'
-  },
-  temp:{
-    flexDirection:'row'
-  },
-  tempMax:{
-    fontSize:40,
-    color:'white'
-  },
-  tempOMax:{
-    fontSize:25,
-    color:'white'
-  },
-  tempCMax:{
-    fontSize:40,
-    color:'white'
-  },
-  tempMin:{
-    fontSize:20,
-    color:'white',
-    marginBottom:30
-  },
-  tempOMin:{
-    fontSize:10,
-    color:'white'
-  },
-  tempCMin:{
-    fontSize:20,
-    color:'white',
-    marginBottom:30,
-  },
-  placeText:{
-    fontSize:20,
-    color:'white'
-  }
-})
