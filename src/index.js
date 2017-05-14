@@ -16,15 +16,6 @@ const urlForecast = 'http://api.openweathermap.org/data/2.5/forecast/daily?'
 const arrayDayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
 const backgroundImage = require('./icons/giphy.gif')
-const scatteredclouds = require("./icons/white_cloud.png")
-const clearsky = require("./icons/sunny.png")
-const fewclouds = require("./icons/sunny_intervals.png")
-const brokenclouds = require("./icons/thundery_showers.png")
-const showerrain = require("./icons/heavy_rain_showers.png")
-const rain = require("./icons/cloudy_with_light_rain.png")
-const thunderstorm = require("./icons/thunderstorms.png")
-const snow = require("./icons/cloudy_with_light_snow.png")
-const mist = require("./icons/mist.png")
 
 const icon_01d = require('./icons/01d.png')
 const icon_01n = require('./icons/01n.png')
