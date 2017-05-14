@@ -66,79 +66,29 @@ export default class WeatherIndex extends Component {
   _getLocation(dataLocation){
     this.setState({location:dataLocation.coords})
 
-    console.log(this.state.location)
-
     if(this.state.location !== null){
-      let urlLocation = url + 'lat='+this.state.location.latitude+'&lon='+this.state.location.latitude+'&appid='+apiKey+'&units=metric'
+      let urlLocation = url + 'lat='+this.state.location.latitude+'&lon='+this.state.location.longitude+'&appid='+apiKey+'&units=metric'
 
       fetch(urlLocation).
       then((data)=>data.json())
       .then((dataJSON)=>{
+        console.log(urlLocation)
         this.setState({coords:dataJSON})
       })
       .done()
 
-      let urlLocationForecast = urlForecast + 'lat='+this.state.location.latitude+'&lon='+this.state.location.latitude+'&appid='+apiKey+'&units=metric&cnt=7'
+      let urlLocationForecast = urlForecast + 'lat='+this.state.location.latitude+'&lon='+this.state.location.longitude+'&appid='+apiKey+'&units=metric&cnt=7'
 
       fetch(urlLocationForecast)
       .then((data)=>data.json())
       .then((dataJSON)=>{
         arrayForecast = dataJSON.list
-        console.log(arrayForecast);
         this.setState({
           dataForecase:ds.cloneWithRows(arrayForecast)
         })
       })
       .done()
     }
-  }
-
-  _renderIconWeather(description){
-    let imageSource = null
-    switch(description){
-      case 'clear sky' :
-        imageSource = clearsky
-        break
-
-      case 'few clouds':
-        imageSource = fewclouds
-        break
-
-      case 'scattered clouds':
-        imageSource = scatteredclouds
-        break
-
-      case 'broken clouds':
-        imageSource = brokenclouds
-        break;
-
-      case 'shower rain':
-        imageSource = showerrain
-        break
-
-      case 'rain':
-        imageSource = rain
-        break;
-
-      case 'thunderstorm':
-        imageSource = thunderstorm
-        break
-
-      case 'snow':
-        imageSource = snow
-        break
-
-      case 'mist':
-        imageSource = mist
-        break
-    }
-
-    return (
-        <View  key={description} style={{flexDirection:'row',alignItems:'center'}}>
-        <Text style={{fontSize:15,color:'white',marginTop:10, marginLeft:10}}>{description}</Text>
-          <Image style={{width:50,height:50}} source={imageSource}/>
-        </View>
-      )
   }
 
   _renderIconWeatherForecast(icon){
@@ -158,6 +108,9 @@ export default class WeatherIndex extends Component {
         break
       case '03d':
         imageSource = icon_03d
+        break
+      case '03n':
+        imageSource = icon_03n
         break
       case '04n':
         imageSource = icon_04n
@@ -198,7 +151,7 @@ export default class WeatherIndex extends Component {
     }
 
     return (
-        <Image key={icon} source={imageSource} style={{flex:1, width:50, height:50, resizeMode:'contain', justifyContent:'center',alignItems:'center'}}/>
+        <Image key={icon} source={imageSource} style={{width:50, height:50, resizeMode:'contain', justifyContent:'center',alignItems:'center'}}/>
     )
   }
 
@@ -207,13 +160,13 @@ export default class WeatherIndex extends Component {
 
     return(
       <View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10,paddingRight:10}}>
-        <View style={{flex:1, justifyContent:'center',alignItems:'flex-end'}}>
+        <View style={{flex:1, justifyContent:'center',alignItems:'flex-end',paddingRight:10}}>
           <Text style={{color:'white'}} key={data.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
         </View>
 
         {data.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
 
-        <View style={{flex:1, flexDirection:'row',alignItems:'center'}}>
+        <View style={{flex:1, flexDirection:'row',alignItems:'center',paddingLeft:10}}>
           <Text style={{color:'white'}}>{data.temp.day}</Text>
           <Text style={{color:'white',fontSize:8,alignSelf:'flex-start'}}>o</Text>
           <Text style={{color:'white'}}>C</Text>
@@ -243,21 +196,23 @@ export default class WeatherIndex extends Component {
         <View style={styles.footer}>
           <View style={styles.footerLeft}>
             <View style={styles.temp}>
-              <Text style={styles.tempMax}>{this.state.coords && this.state.coords.main.temp_max}</Text>
+              <Text style={styles.tempMax}>{this.state.coords && this.state.coords.main.temp}</Text>
               <Text style={styles.tempOMax}>o</Text>
               <Text style={styles.tempCMax}>C</Text>
             </View>
 
             <View style={styles.temp}>
-              <Text style={styles.tempMin}>{this.state.coords && this.state.coords.main.temp_min}</Text>
-              <Text style={styles.tempOMin}>o</Text>
-              <Text style={styles.tempCMin}>C</Text>
+              <Text style={styles.tempMin}>{this.state.coords && this.state.coords.main.humidity}</Text>
+              <Text style={styles.tempMinPercent}>%</Text>
             </View>
           </View>
 
           <View style={styles.footerRight}>
             <Text style={styles.placeText}>{this.state.coords && this.state.coords.name}</Text>
-            {this.state.coords && this.state.coords.weather.map((item)=>this._renderIconWeather(item.description))}
+            <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center',marginBottom:30}}>
+              {this.state.coords && this.state.coords.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+              <Text style={{fontSize:15,color:'white',marginLeft:10}}>{this.state.coords && this.state.coords.weather.map((item)=>item.description)}</Text>
+            </View>
           </View>
         </View>
       </Image>
