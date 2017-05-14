@@ -5,7 +5,9 @@ import {
   View,
   StatusBar,
   Image,
-  ListView
+  ListView,
+  Modal,
+  TouchableOpacity
 } from 'react-native'
 import styles from './styles'
 
@@ -150,19 +152,21 @@ export default class WeatherIndex extends Component {
     let date = new Date(data.dt * 1000)
 
     return(
-      <View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10,paddingRight:10}}>
-        <View style={{flex:1, justifyContent:'center',alignItems:'flex-end',paddingRight:10}}>
-          <Text style={{color:'white'}} key={data.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
-        </View>
+        <TouchableOpacity>
+          <View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10,paddingRight:10}}>
+            <View style={{flex:1, justifyContent:'center',alignItems:'flex-end',paddingRight:10}}>
+              <Text style={{color:'white'}} key={data.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
+            </View>
 
-        {data.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+            {data.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
 
-        <View style={{flex:1, flexDirection:'row',alignItems:'center',paddingLeft:10}}>
-          <Text style={{color:'white'}}>{data.temp.day}</Text>
-          <Text style={{color:'white',fontSize:8,alignSelf:'flex-start'}}>o</Text>
-          <Text style={{color:'white'}}>C</Text>
-        </View>
-      </View>
+            <View style={{flex:1, flexDirection:'row',alignItems:'center',paddingLeft:10}}>
+              <Text style={{color:'white'}}>{data.temp.day}</Text>
+              <Text style={{color:'white',fontSize:8,alignSelf:'flex-start'}}>o</Text>
+              <Text style={{color:'white'}}>C</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
     )
   }
 
@@ -178,8 +182,7 @@ export default class WeatherIndex extends Component {
               renderRow={this._renderRow.bind(this)}
               enableEmptySections={true}
               renderSeparator={(sectionID,rowID)=><View style={{flex:1,height:1,backgroundColor:'rgba(0,0,0,0.2)'}}></View>}
-              style={{paddingTop:10}}
-            />
+              style={{paddingTop:10}}/>
             <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20}}>WEATHER FORECAST</Text>
           </View>
         </View>
