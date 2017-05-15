@@ -10,6 +10,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 import styles from './styles'
+import PopupDialog,{SlideAnimation} from 'react-native-popup-dialog'
 
 const apiKey = '57bb3d115200197085a58518294d49c2'
 const url = 'http://api.openweathermap.org/data/2.5/weather?'
@@ -148,11 +149,15 @@ export default class WeatherIndex extends Component {
     )
   }
 
+  _showForecastDetail(data){
+    this.popupDialog.show()
+  }
+
   _renderRow(data){
     let date = new Date(data.dt * 1000)
 
     return(
-        <TouchableOpacity>
+        <TouchableOpacity onPress={(data)=>this._showForecastDetail(data)}>
           <View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10,paddingRight:10}}>
             <View style={{flex:1, justifyContent:'center',alignItems:'flex-end',paddingRight:10}}>
               <Text style={{color:'white'}} key={data.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
@@ -174,7 +179,6 @@ export default class WeatherIndex extends Component {
     return (
       <Image style={styles.container} source={backgroundImage} resizeMode={'cover'}>
         <StatusBar hidden={true} />
-
         <View style={styles.body}>
           <View style={styles.containerBody}>
             <ListView
@@ -186,6 +190,14 @@ export default class WeatherIndex extends Component {
             <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20}}>WEATHER FORECAST</Text>
           </View>
         </View>
+
+        <PopupDialog
+          ref={(popupDialog)=>{this.popupDialog=popupDialog}}
+          dialogAnimation={new SlideAnimation({slideFrom:'top'})}>
+          <View>
+            <Text>Hello</Text>
+          </View>
+        </PopupDialog>
 
         <View style={styles.footer}>
           <View style={styles.footerLeft}>
