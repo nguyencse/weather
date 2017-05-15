@@ -23,7 +23,6 @@ export default styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0.5)',
   },
   footerLeft:{
-    flex:2,
     marginLeft:30,
     justifyContent:'center'
   },
@@ -64,11 +63,10 @@ export default styles = StyleSheet.create({
   },
   tempMinPercent:{
     fontSize:15,
-    color:'white'
+    color:'white',
   },
   placeText:{
     fontSize:20,
-    color:'white',
-    marginTop:30
+    color:'white'
   }
 })
