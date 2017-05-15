@@ -50,8 +50,8 @@ export default class WeatherIndex extends Component {
     this.state={
       location:null,
       coords:null,
-      forecast:null,
-      dataForecase:ds.cloneWithRows(arrayForecast)
+      details:null,
+      dataForecast:ds.cloneWithRows(arrayForecast)
     }
   }
 
@@ -78,9 +78,9 @@ export default class WeatherIndex extends Component {
       .then((data)=>data.json())
       .then((dataJSON)=>{
         arrayForecast = dataJSON.list
-        console.log(arrayForecast)
+        console.log(urlLocationForecast)
         this.setState({
-          dataForecase:ds.cloneWithRows(arrayForecast)
+          dataForecast:ds.cloneWithRows(arrayForecast)
         })
       })
       .done()
@@ -151,10 +151,6 @@ export default class WeatherIndex extends Component {
     )
   }
 
-  _showForecastDetail(data){
-    this.popupDialog.show()
-  }
-
   _welcome(){
     MessageBarManager.showAlert({
       avatar:urlAvatarFB,
@@ -165,20 +161,24 @@ export default class WeatherIndex extends Component {
     })
   }
 
-  _renderRow(data){
-    let date = new Date(data.dt * 1000)
+  _showForecastDetail(dataRow){
+    this.setState({details:dataRow},()=>this.popupDialog.show())
+  }
+
+  _renderRow(dataRow){
+    let date = new Date(dataRow.dt * 1000)
 
     return(
-        <TouchableOpacity onPress={(data)=>this._showForecastDetail(data)}>
+        <TouchableOpacity onPress={(evt)=>this._showForecastDetail(dataRow)}>
           <View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center',paddingLeft:10,paddingRight:10}}>
             <View style={{flex:1, justifyContent:'center',alignItems:'flex-end',paddingRight:10}}>
-              <Text style={{color:'white'}} key={data.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
+              <Text style={{color:'white'}} key={dataRow.dt}>{arrayDayOfWeek[date.getDay()]}</Text>
             </View>
 
-            {data.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+            {dataRow.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
 
             <View style={{flex:1, flexDirection:'row',alignItems:'center',paddingLeft:10}}>
-              <Text style={{color:'white'}}>{data.temp.day}</Text>
+              <Text style={{color:'white'}}>{dataRow.temp.day}</Text>
               <Text style={{color:'white',fontSize:8,alignSelf:'flex-start'}}>o</Text>
               <Text style={{color:'white'}}>C</Text>
             </View>
@@ -189,61 +189,165 @@ export default class WeatherIndex extends Component {
 
   render() {
     console.ignoredYellowBox = ['Warning: BackAndroid']
-    return (
-      <Image style={styles.container} source={backgroundImage} resizeMode={'cover'}>
-        <StatusBar hidden={true} />
-        {this._welcome()}
+    if(!this.state.details){
+      return (
+        <Image style={styles.container} source={backgroundImage} resizeMode={'cover'}>
+          <StatusBar hidden={true} />
+          {this._welcome()}
 
-        <View style={styles.body}>
-          <View style={styles.containerBody}>
-            <ListView
-              dataSource={this.state.dataForecase}
-              renderRow={this._renderRow.bind(this)}
-              enableEmptySections={true}
-              renderSeparator={(sectionID,rowID)=><View style={{flex:1,height:1,backgroundColor:'rgba(0,0,0,0.2)'}}></View>}
-              style={{paddingTop:10}}/>
-            <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20,marginTop:20}}>WEATHER FORECAST</Text>
-          </View>
-        </View>
-
-        <View style={styles.footer}>
-          <View style={styles.footerLeft}>
-            <View style={styles.temp}>
-              <Text style={styles.tempMax}>{this.state.coords && this.state.coords.main.temp}</Text>
-              <Text style={styles.tempOMax}>o</Text>
-              <Text style={styles.tempCMax}>C</Text>
-            </View>
-
-            <View style={styles.temp}>
-              <Text style={styles.tempMin}>{this.state.coords && this.state.coords.main.humidity}</Text>
-              <Text style={styles.tempMinPercent}>%</Text>
+          <View style={styles.body}>
+            <View style={styles.containerBody}>
+              <ListView
+                dataSource={this.state.dataForecast}
+                renderRow={this._renderRow.bind(this)}
+                enableEmptySections={true}
+                renderSeparator={(sectionID,rowID)=><View style={{flex:1,height:1,backgroundColor:'rgba(0,0,0,0.2)'}}></View>}
+                style={{paddingTop:10}}/>
+              <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20,marginTop:20}}>WEATHER FORECAST</Text>
             </View>
           </View>
 
-          <View style={styles.footerRight}>
-            <Text style={styles.placeText}>{this.state.coords && this.state.coords.name}</Text>
-            <View style={{flexDirection:'row'}}>
-              {this.state.coords && this.state.coords.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+          <View style={styles.footer}>
+            <View style={styles.footerLeft}>
+              <View style={styles.temp}>
+                <Text style={styles.tempMax}>{this.state.coords && this.state.coords.main.temp}</Text>
+                <Text style={styles.tempOMax}>o</Text>
+                <Text style={styles.tempCMax}>C</Text>
+              </View>
+
+              <View style={styles.temp}>
+                <Text style={styles.tempMin}>{this.state.coords && this.state.coords.main.humidity}</Text>
+                <Text style={styles.tempMinPercent}>%</Text>
+              </View>
             </View>
-            <View style={{alignItems:'flex-end'}}>
-              <Text style={{fontSize:15,color:'white'}}>{this.state.coords && this.state.coords.weather.map((item)=>item.description)}</Text>
+
+            <View style={styles.footerRight}>
+              <Text style={styles.placeText}>{this.state.coords && this.state.coords.name}</Text>
+              <View style={{flexDirection:'row'}}>
+                {this.state.coords && this.state.coords.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+              </View>
+              <View style={{alignItems:'flex-end'}}>
+                <Text style={{fontSize:15,color:'white'}}>{this.state.coords && this.state.coords.weather.map((item)=>item.description)}</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        <PopupDialog
-          ref={(popupDialog)=>{this.popupDialog=popupDialog}}
-          dialogTitle={<DialogTitle title={'Title'} titleTextStyle={{color:'white'}} haveTitleBar={true} titleStyle={{backgroundColor:'gray'}}/>}
-          dialogAnimation={new SlideAnimation({slideFrom:'bottom'})}
-          width={0.8}>
-          <View style={{flex:1}}>
-            <Text>Hello</Text>
+          <PopupDialog
+            ref={(popupDialog)=>{this.popupDialog=popupDialog}}
+            dialogTitle={<DialogTitle title={'Weather Forecast'} titleTextStyle={{color:'white'}} haveTitleBar={true} titleStyle={{backgroundColor:'gray'}}/>}
+            dialogAnimation={new SlideAnimation({slideFrom:'bottom'})}
+            width={0.8}>
+            <View style={{flex:1}}>
+              <Text>{this.state.details&&this.state.details}</Text>
+            </View>
+          </PopupDialog>
+
+          <MessageBar ref='alert'/>
+        </Image>
+      )
+    }else{
+      return (
+        <Image style={styles.container} source={backgroundImage} resizeMode={'cover'}>
+          <StatusBar hidden={true} />
+
+          <View style={styles.body}>
+            <View style={styles.containerBody}>
+              <ListView
+                dataSource={this.state.dataForecast}
+                renderRow={this._renderRow.bind(this)}
+                enableEmptySections={true}
+                renderSeparator={(sectionID,rowID)=><View style={{flex:1,height:1,backgroundColor:'rgba(0,0,0,0.2)'}}></View>}
+                style={{paddingTop:10}}/>
+              <Text style={{color:'white',fontSize:20, alignSelf:'center',marginBottom:20,marginTop:20}}>WEATHER FORECAST</Text>
+            </View>
           </View>
-        </PopupDialog>
 
-        <MessageBar ref='alert'/>
-      </Image>
-    );
+          <View style={styles.footer}>
+            <View style={styles.footerLeft}>
+              <View style={styles.temp}>
+                <Text style={styles.tempMax}>{this.state.coords && this.state.coords.main.temp}</Text>
+                <Text style={styles.tempOMax}>o</Text>
+                <Text style={styles.tempCMax}>C</Text>
+              </View>
+
+              <View style={styles.temp}>
+                <Text style={styles.tempMin}>{this.state.coords && this.state.coords.main.humidity}</Text>
+                <Text style={styles.tempMinPercent}>%</Text>
+              </View>
+            </View>
+
+            <View style={styles.footerRight}>
+              <Text style={styles.placeText}>{this.state.coords && this.state.coords.name}</Text>
+              <View style={{flexDirection:'row'}}>
+                {this.state.coords && this.state.coords.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+              </View>
+              <View style={{alignItems:'flex-end'}}>
+                <Text style={{fontSize:15,color:'white'}}>{this.state.coords && this.state.coords.weather.map((item)=>item.description)}</Text>
+              </View>
+            </View>
+          </View>
+
+          <PopupDialog
+            ref={(popupDialog)=>{this.popupDialog=popupDialog}}
+            dialogTitle={<DialogTitle title={new Date(this.state.details.dt*1000).toDateString()} titleTextStyle={{color:'white'}} haveTitleBar={true} titleStyle={{backgroundColor:'rgba(11,60,186,0.7)'}}/>}
+            dialogAnimation={new SlideAnimation({slideFrom:'bottom'})}
+            width={0.83}
+            height={0.6}>
+            <View style={{flex:1}}>
+
+              <View style={{flexDirection:'row',justifyContent:'center',alignItems:'flex-start'}}>
+                <Text style={{fontSize:40}}>{this.state.details.temp.day}</Text>
+                <Text style={{fontSize:25}}>o</Text>
+                <Text style={{fontSize:40}}>C</Text>
+              </View>
+
+              <View style={{flex:1,flexDirection:'row',justifyContent:'center'}}>
+                <View style={{flex:1,marginRight:20,alignItems:'flex-end'}}>
+                  <Text style={{color:'rgba(11,60,186,0.7)'}}>Min</Text>
+                  <Text>{this.state.details.temp.min}</Text>
+                </View>
+                <View style={{flex:1,marginLeft:20,alignItems:'flex-start'}}>
+                  <Text style={{color:'rgba(11,60,186,0.7)'}}>Max</Text>
+                  <Text>{this.state.details.temp.max}</Text>
+                </View>
+              </View>
+
+              <View style={{flex:7,marginTop:20}}>
+                <View style={{flexDirection:'row',justifyContent:'center'}}>
+                  <View style={{flex:1,alignItems:'center'}}>
+                    <Text style={{color:'rgba(11,60,186,0.7)'}}>Morning</Text>
+                    <Text>{this.state.details.temp.morn}</Text>
+                  </View>
+                  <View style={{flex:1,alignItems:'center'}}>
+                    <Text style={{color:'rgba(11,60,186,0.7)'}}>Evening</Text>
+                    <Text>{this.state.details.temp.eve}</Text>
+                  </View>
+                  <View style={{flex:1,alignItems:'center'}}>
+                    <Text style={{color:'rgba(11,60,186,0.7)'}}>Night</Text>
+                    <Text>{this.state.details.temp.night}</Text>
+                  </View>
+                </View>
+
+                <View style={{flex:3,justifyContent:'center',alignItems:'center',marginTop:10}}>
+                  <Text style={{fontSize:20,color:'rgba(11,60,186,0.7)'}}>Humidity</Text>
+                  <View style={{flex:1,flexDirection:'row'}}>
+                    <Text style={{fontSize:40}}>{this.state.details.humidity}</Text>
+                    <Text style={{fontSize:40}}>%</Text>
+                  </View>
+                </View>
+
+                <View style={{flex:4,justifyContent:'center',alignItems:'center'}}>
+                  <View style={{flexDirection:'row'}}>
+                    {this.state.details.weather.map((item)=>this._renderIconWeatherForecast(item.icon))}
+                  </View>
+                  <Text style={{flex:1}}>{this.state.details.weather.map((item)=>item.description)}</Text>
+                </View>
+              </View>
+            </View>
+          </PopupDialog>
+        </Image>
+      )
+    }
   }
 
   componentDidMount(){

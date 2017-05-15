@@ -59,11 +59,11 @@ export default styles = StyleSheet.create({
   tempCMin:{
     fontSize:20,
     color:'white',
-    marginBottom:30,
+    marginBottom:30
   },
   tempMinPercent:{
     fontSize:15,
-    color:'white',
+    color:'white'
   },
   placeText:{
     fontSize:20,
