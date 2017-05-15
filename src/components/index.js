@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import styles from '../styles'
 import {MessageBar,MessageBarManager} from 'react-native-message-bar'
+import PopupDialog,{DialogTitle,SlideAnimation} from 'react-native-popup-dialog'
 
 const apiKey = '57bb3d115200197085a58518294d49c2'
 const url = 'http://api.openweathermap.org/data/2.5/weather?'
@@ -49,7 +50,7 @@ export default class WeatherIndex extends Component {
     this.state={
       location:null,
       coords:null,
-      modalOpen:false,
+      forecast:null,
       dataForecase:ds.cloneWithRows(arrayForecast)
     }
   }
@@ -67,7 +68,6 @@ export default class WeatherIndex extends Component {
       fetch(urlLocation).
       then((data)=>data.json())
       .then((dataJSON)=>{
-        console.log(urlLocation)
         this.setState({coords:dataJSON})
       })
       .done()
@@ -78,6 +78,7 @@ export default class WeatherIndex extends Component {
       .then((data)=>data.json())
       .then((dataJSON)=>{
         arrayForecast = dataJSON.list
+        console.log(arrayForecast)
         this.setState({
           dataForecase:ds.cloneWithRows(arrayForecast)
         })
@@ -151,7 +152,7 @@ export default class WeatherIndex extends Component {
   }
 
   _showForecastDetail(data){
-
+    this.popupDialog.show()
   }
 
   _welcome(){
@@ -187,6 +188,7 @@ export default class WeatherIndex extends Component {
   }
 
   render() {
+    console.ignoredYellowBox = ['Warning: BackAndroid']
     return (
       <Image style={styles.container} source={backgroundImage} resizeMode={'cover'}>
         <StatusBar hidden={true} />
@@ -228,6 +230,16 @@ export default class WeatherIndex extends Component {
             </View>
           </View>
         </View>
+
+        <PopupDialog
+          ref={(popupDialog)=>{this.popupDialog=popupDialog}}
+          dialogTitle={<DialogTitle title={'Title'} titleTextStyle={{color:'white'}} haveTitleBar={true} titleStyle={{backgroundColor:'gray'}}/>}
+          dialogAnimation={new SlideAnimation({slideFrom:'bottom'})}
+          width={0.8}>
+          <View style={{flex:1}}>
+            <Text>Hello</Text>
+          </View>
+        </PopupDialog>
 
         <MessageBar ref='alert'/>
       </Image>
