@@ -1,4 +1,4 @@
-package com.weather;
+package com.nguyencse.weather;
 
 import android.app.Application;
 
